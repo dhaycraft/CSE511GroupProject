@@ -16,6 +16,16 @@ object SpatialQuery extends App{
 
     return resultDf.count()
   }
+  def scalaWithin (pointString1:String, pointString2:String, distance:Double): Boolean= {
+      val pointArray1: Array[String]=pointString1.split(",")
+      val pointArray2: Array[String]=pointString2.split(",")
+      val x1: Double=pointArray1(0).toDouble
+      val y1: Double=pointArray1(1).toDouble
+      val x2: Double=pointArray2(0).toDouble
+      val y2: Double=pointArray2(1).toDouble
+      val distPoints: Double=scala.math.sqrt(scala.math.pow(x1-x2,2)+scala.math.pow(y1-y2,2))
+      return distPoints<=distance
+    }
 
   def runRangeJoinQuery(spark: SparkSession, arg1: String, arg2: String): Long = {
 
@@ -41,14 +51,7 @@ object SpatialQuery extends App{
 
     // YOU NEED TO FILL IN THIS USER DEFINED FUNCTION
     spark.udf.register("ST_Within",(pointString1:String, pointString2:String, distance:Double)=>{
-          val pointArray1: Array[String]=pointString1.split(",")
-          val pointArray2: Array[String]=pointString2.split(",")
-          val x1: Double=pointArray1(0).toDouble
-          val y1: Double=pointArray1(1).toDouble
-          val x2: Double=pointArray2(0).toDouble
-          val y2: Double=pointArray2(1).toDouble
-          val distPoints: Double=scala.math.sqrt(scala.math.pow(x1-x2,2)+scala.math.pow(y1-y2,2))
-          return distPoints<=distance
+      scalaWithin(pointString1 = pointString1, pointString2=pointString2, distance=distance)
   })
 
     val resultDf = spark.sql("select * from point where ST_Within(point._c0,'"+arg2+"',"+arg3+")")
@@ -67,14 +70,7 @@ object SpatialQuery extends App{
 
     // YOU NEED TO FILL IN THIS USER DEFINED FUNCTION
     spark.udf.register("ST_Within",(pointString1:String, pointString2:String, distance:Double)=>{
-          val pointArray1: Array[String]=pointString1.split(",")
-          val pointArray2: Array[String]=pointString2.split(",")
-          val x1: Double=pointArray1(0).toDouble
-          val y1: Double=pointArray1(1).toDouble
-          val x2: Double=pointArray2(0).toDouble
-          val y2: Double=pointArray2(1).toDouble
-          val distPoints: Double=scala.math.sqrt(scala.math.pow(x1-x2,2)+scala.math.pow(y1-y2,2))
-          return distPoints<=distance
+      scalaWithin(pointString1 = pointString1, pointString2=pointString2, distance=distance)
   })
 
     val resultDf = spark.sql("select * from point1 p1, point2 p2 where ST_Within(p1._c0, p2._c0, "+arg3+")")
