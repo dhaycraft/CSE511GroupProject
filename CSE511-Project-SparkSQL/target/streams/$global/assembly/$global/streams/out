@@ -1,10 +1,10 @@
-[0m[[0m[0minfo[0m] [0m[0mIncluding: scala-library-2.11.11.jar[0m
+[0m[[0m[0minfo[0m] [0m[0mIncluding from cache: scala-library-2.11.11.jar[0m
 [0m[[0m[0mdebug[0m] [0m[0mCalculate mappings...[0m
 [0m[[0m[0minfo[0m] [0m[0mChecking every *.class/*.jar file's SHA-1.[0m
 [0m[[0m[0minfo[0m] [0m[0mMerging files...[0m
 [0m[[0m[33mwarn[0m] [0m[0mMerging 'META-INF/MANIFEST.MF' with strategy 'discard'[0m
 [0m[[0m[33mwarn[0m] [0m[0mStrategy 'discard' was applied to a file[0m
-[0m[[0m[0minfo[0m] [0m[0mSHA-1: eccfdfcc10ed2298ebde3076bc42a4dad2e5a18d[0m
+[0m[[0m[0minfo[0m] [0m[0mSHA-1: ef68be1ceaddb18c863a8b95fa6750232fa70c08[0m
 [0m[[0m[0minfo[0m] [0m[0mPackaging /root/CSE511GroupProject/CSE511-Project-SparkSQL/target/scala-2.11/CSE512-Project-Phase2-Template-assembly-0.1.0.jar ...[0m
 [0m[[0m[0mdebug[0m] [0m[0mInput file mappings:[0m
 [0m[[0m[0mdebug[0m] [0m[0m	cse512/SparkSQLExample$.class[0m
