@@ -43,7 +43,17 @@ def runHotcellAnalysis(spark: SparkSession, pointPath: String): DataFrame =
   val numCells = (maxX - minX + 1)*(maxY - minY + 1)*(maxZ - minZ + 1)
 
   // YOU NEED TO CHANGE THIS PART
+  pickupInfo.createOrReplaceTempView("pickup_coords")
+  val countCells = spark.sql(s"""
+    SELECT x,y,z, COUNT(*) AS countPoints
+    FROM pickup_coords
+    WHERE x BETWEEN $minX AND $maxX AND
+    y BETWEEN $minY and $maxY AND
+    z BETWEEN $minZ and $maxZ
+    GROUP BY x,y,z
+    """)
+  countCells.show()
 
-  return pickupInfo // YOU NEED TO CHANGE THIS PART
+  return countCells // YOU NEED TO CHANGE THIS PART
 }
 }
