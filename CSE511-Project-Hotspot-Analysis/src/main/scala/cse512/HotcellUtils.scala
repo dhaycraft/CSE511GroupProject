@@ -48,4 +48,42 @@ object HotcellUtils {
   }
 
   // YOU NEED TO CHANGE THIS PART
+  def areNeighbors(x1: Double, y1: Double, z1:Double, x2: Double, y2: Double, z2: Double): Boolean={
+    val areNeighbors: Boolean = if(math.abs(x1-x2)<=1 && math.abs(y1-y2)<=1 && math.abs(z1-z2)<=1){
+      true
+    } else{
+      false
+    }
+    return areNeighbors
+  }
+  // Each cell has a neighboring region which can be considered as a 3x3 cube == 27 total cells
+  // Howver there are special cases when a cell resides at a boundary
+  // When a cell lies on the boundary of single axis then the total cell count is 18
+  // When a cell lies on two axis boundaries then 12 cells compose the neighborhood
+  // When cell lies on three axis boundaries then there are only 8 cells that compose the region
+  def numberOfCells(x: Double, y: Double, z: Double, minX: Double, minY: Double, minZ: Double, maxX: Double, maxY: Double, maxZ: Double): Int = {
+    var boundary_count: Int = 0
+    // count number of boundaries point cell is on
+    if(x==minX || x == maxX){
+      boundary_count = boundary_count+1
+    }
+    if(y==minY || y==maxY){
+      boundary_count = boundary_count+1
+    }
+    if(z==minZ || z==maxZ){
+      boundary_count = boundary_count+1
+    }
+    val numberOfCells: Int = boundary_count match {
+      case 1 => 18
+      case 2 => 12
+      case 3 => 8
+      case _ => 27
+    }
+    return numberOfCells
+  }
+  
+  def getisOrdStatistic(adjacentCells: Double, spatial_weight: Double, numOfCells: Double, meanCount: Double, sdCount: Double): Double = {
+    numerator = spatial_weight - meanCount*adjacentCells
+    denominator = sdCount * math.sqrt(((numOfCells*adjacentCells)-pow(adjacentCells,2))/(numOfCells-1))
+    
 }

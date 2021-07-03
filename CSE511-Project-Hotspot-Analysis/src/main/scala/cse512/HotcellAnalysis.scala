@@ -52,8 +52,40 @@ def runHotcellAnalysis(spark: SparkSession, pointPath: String): DataFrame =
     z BETWEEN $minZ and $maxZ
     GROUP BY x,y,z
     """)
-  countCells.show()
 
+  countCells.createOrReplaceTempView("countCells_tbl")
+  countCells.show()
+  // Calculate mean and standard deviation
+  val avgCount: Double = countCells.agg(sum("countPoints")/numCells).first.getDouble(0)
+  
+  val sdCount: Double = math.sqrt(countCells.agg(sum(pow("countPoints",2)) / numCells-math.pow(avgCount,2)).first.getDouble(0))
+  
+
+  // get neighbors
+  spark.udf.register("areNeighbors", (x1: Double, y1: Double, z1: Double, x2: Double, y2: Double, z2: Double) =>
+      HotcellUtils.areNeighbors(x1=x1, y1=y1, z1=z1, x2=x2,y2=y2, z2=z2))
+
+  val getNeighbors = spark.sql(s"""
+    SELECT cc1.x, cc1.y, cc1.z, SUM(cc2.countPoints) AS spatial_weight
+    FROM countCells_tbl AS cc1,
+         countCells_tbl as cc2
+    WHERE areNeighbors(cc1.x,  cc1.y,  cc1.z,  cc2.x, cc2.y, cc2.z)
+    GROUP BY cc1.x, cc1.y, cc1.z
+    """)
+
+  getNeighbors.show()
+  getNeighbors.createOrReplaceTempView("spatial_weights_tbl")
+  
+  spark.udf.register("numberOfCells", (x: Double, y: Double, z: Double, minX: Double, minY: Double, minZ: Double, maxX: Double, maxY: Double, maxZ: Double) =>
+    HotcellUtils.numberOfCells(x=x, y=y, z=z, minX=minX, minY=minY, minZ=minZ, maxX=maxX, maxY=maxY, maxZ=maxZ))
+  
+  val adjacentCells = spark.sql(s"""
+    SELECT x,y,z,spatial_weight, numberOfCells(x,y,z,$minX, $minY,$minZ, $maxX, $maxY, $maxZ) AS number_of_cells
+    FROM spatial_weights_tbl
+    """)
+  adjacentCells.show()
+  adjacentCells.createOrReplaceTempView("adjacent_cells_tbL")
+  
   return countCells // YOU NEED TO CHANGE THIS PART
 }
 }
