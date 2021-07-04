@@ -83,7 +83,9 @@ object HotcellUtils {
   }
   
   def getisOrdStatistic(adjacentCells: Double, spatial_weight: Double, numOfCells: Double, meanCount: Double, sdCount: Double): Double = {
-    numerator = spatial_weight - meanCount*adjacentCells
-    denominator = sdCount * math.sqrt(((numOfCells*adjacentCells)-pow(adjacentCells,2))/(numOfCells-1))
+    val numerator: Double = spatial_weight - meanCount*adjacentCells
+    val denominator: Double = sdCount * math.sqrt(((numOfCells*adjacentCells)-math.pow(adjacentCells,2))/(numOfCells-1))
+    return numerator/denominator
+  }
     
 }

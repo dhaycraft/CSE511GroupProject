@@ -85,7 +85,20 @@ def runHotcellAnalysis(spark: SparkSession, pointPath: String): DataFrame =
     """)
   adjacentCells.show()
   adjacentCells.createOrReplaceTempView("adjacent_cells_tbL")
+
+  spark.udf.register("getisOrdStatistic", (adjacentCells: Double,  spatial_weight: Double,  numOfCells: Double, meanCount: Double, sdCount:Double) =>
+      HotcellUtils.getisOrdStatistic(adjacentCells = adjacentCells, spatial_weight = spatial_weight, numOfCells=numOfCells, meanCount=meanCount, sdCount=sdCount))
+
+  val getisOrdStat = spark.sql(s"""
+    SELECT x,y,z
+    FROM (SELECT x,y,z, getisOrdStatistic(number_of_cells, spatial_weight, $numCells, $avgCount, $sdCount) AS z_score
+      FROM adjacent_cells_tbl)
+    ORDER BY z_score DESC
+    """)
   
-  return countCells // YOU NEED TO CHANGE THIS PART
+  getisOrdStat.show()
+  getisOrdStat.createOrReplaceTempView("getisOrdStat")
+
+  return getisOrdStat.coalesce(1) // YOU NEED TO CHANGE THIS PART
 }
 }
